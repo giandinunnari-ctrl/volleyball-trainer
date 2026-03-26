@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="VB Trainer"/>
+  <meta name="theme-color" content="#fbbf24"/>
+  <title>Volleyball Trainer Pro</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{
+      --bg:#0a0f1e;--surface:#111827;--surface2:#0d1424;--surface3:#1a2540;
+      --border:#1e3a5f;--text:#f1f5f9;--muted:#94a3b8;--dim:#4b6080;
+      --accent:#fbbf24;--accent2:#f59e0b;--green:#22c55e;--red:#ef4444;
+      --blue:#3b82f6;--purple:#a855f7;--orange:#f97316;
+      --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;overflow-x:hidden}
+    #app{min-height:100dvh;padding:calc(var(--safe-top)+12px) 14px calc(var(--safe-bot)+44px);max-width:520px;margin:0 auto}
+    .header{text-align:center;padding:14px 0 22px}
+    .ball{font-size:46px;display:block;margin-bottom:6px;filter:drop-shadow(0 0 12px rgba(251,191,36,0.4))}
+    .header h1{font-size:23px;font-weight:900;letter-spacing:-0.5px;color:var(--accent)}
+    .header .sub{color:var(--muted);font-size:12px;margin-top:3px}
+    .role-badge{display:inline-flex;align-items:center;gap:5px;background:#0d1f38;color:#60a5fa;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;margin-top:8px;border:1px solid #1e3a5f}
+    .tabs{display:flex;gap:5px;margin-bottom:14px;background:var(--surface);border-radius:13px;padding:4px;border:1px solid var(--border)}
+    .tab{flex:1;padding:9px 2px;border-radius:9px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;color:var(--dim);border:none;background:transparent;transition:all 0.2s}
+    .tab.active{background:var(--accent);color:#0a0f1e}
+    .tab:active{transform:scale(0.96)}
+    .card{background:var(--surface);border-radius:16px;padding:16px;border:1px solid var(--border);margin-bottom:11px}
+    .label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:9px;display:block}
+    .energia-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .energia-badge{border-radius:20px;padding:3px 13px;font-weight:800;font-size:11px;color:#fff;transition:background 0.3s}
+    input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:5px;outline:none;cursor:pointer;background:var(--border)}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 0 3px rgba(251,191,36,0.2);transition:transform 0.1s}
+    input[type=range]:active::-webkit-slider-thumb{transform:scale(1.25)}
+    .slider-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-top:4px}
+    .pills{display:flex;flex-wrap:wrap;gap:6px}
+    .pill{border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);transition:all 0.15s;user-select:none}
+    .pill.active{background:var(--accent);color:#0a0f1e;border-color:var(--accent);font-weight:800}
+    .pill:active{transform:scale(0.94)}
+    .toggle-row{display:flex;gap:8px}
+    .toggle-btn{flex:1;padding:11px 4px;border-radius:11px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);transition:all 0.15s;user-select:none}
+    .toggle-btn.active-si{background:var(--red);color:#fff;border-color:var(--red)}
+    .toggle-btn.active-no{background:var(--green);color:#fff;border-color:var(--green)}
+    .toggle-btn:active{transform:scale(0.96)}
+    .equip-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .equip-btn{padding:10px 8px;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);transition:all 0.15s;text-align:center;user-select:none}
+    .equip-btn.active{border-color:var(--blue);background:#0d1f38;color:#60a5fa;font-weight:700}
+    .equip-btn:active{transform:scale(0.95)}
+    .equip-icon{font-size:18px;display:block;margin-bottom:3px}
+    .btn-genera{width:100%;padding:15px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#0a0f1e;border:none;border-radius:13px;font-size:16px;font-weight:900;cursor:pointer;transition:transform 0.15s;animation:pulse 2.5s infinite;margin-top:2px}
+    .btn-genera:active{transform:scale(0.97)}
+    .nota{border-left:4px solid var(--accent);background:var(--surface);border-radius:0 12px 12px 0;padding:11px 14px;font-size:13px;color:var(--text);margin-bottom:11px;line-height:1.5}
+    .sez-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+    .sez-title{font-size:13px;font-weight:800;color:var(--accent)}
+    .sez-badge{font-size:10px;background:#0d1f38;color:#60a5fa;border-radius:9px;padding:2px 9px;font-weight:700}
+    .ex-list{list-style:none}
+    .ex-row{display:flex;align-items:flex-start;gap:9px;padding:10px 0}
+    .ex-row+.ex-row{border-top:1px solid #111f38}
+    .ex-info{flex:1;min-width:0}
+    .ex-name{font-size:14px;color:#cbd5e1;font-weight:600;line-height:1.3}
+    .ex-name.done{text-decoration:line-through;color:var(--dim)}
+    .ex-detail{font-size:11px;color:var(--dim);margin-top:2px;line-height:1.4}
+    .ex-tags{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px}
+    .ex-tag{font-size:10px;border-radius:7px;padding:1px 7px;font-weight:700}
+    .tag-bil{background:#1a2e4a;color:#60a5fa}
+    .tag-mac{background:#1f1a3a;color:#a78bfa}
+    .tag-man{background:#1a3a2e;color:#34d399}
+    .tag-cav{background:#2d2010;color:#fb923c}
+    .tag-cor{background:#1a2a1a;color:#86efac}
+    .tag-ela{background:#1a2d1a;color:#4ade80}
+    .tag-prev{background:#0f2d1f;color:#4ade80}
+    .tag-esp{background:#2a1a3a;color:#c084fc}
+    .tag-mob{background:#2d2500;color:#fde047}
+    .ex-check{width:25px;height:25px;border-radius:50%;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;margin-top:2px;font-size:12px}
+    .ex-check.done{background:var(--green);border-color:var(--green);color:#fff}
+    .combo-box{background:linear-gradient(135deg,#1a0f2e,#1e1538);border:1px solid #3d2060;border-radius:12px;padding:12px 14px;margin-bottom:9px}
+    .combo-label{font-size:11px;font-weight:800;color:#c084fc;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:9px}
+    .combo-steps{display:flex;flex-direction:column;gap:7px}
+    .combo-step{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#e2d8f5;line-height:1.4}
+    .combo-num{min-width:22px;height:22px;border-radius:50%;background:#7c3aed;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .prog-wrap{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+    .prog-bg{flex:1;background:var(--border);border-radius:10px;height:5px;overflow:hidden}
+    .prog-fill{background:linear-gradient(90deg,var(--accent),var(--green));height:5px;border-radius:10px;transition:width 0.4s ease;width:0%}
+    .prog-txt{font-size:11px;color:var(--dim);min-width:40px;text-align:right}
+    .week-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+    .week-day{background:var(--surface2);border-radius:12px;padding:12px 8px;border:1px solid var(--border);text-align:center;cursor:pointer;transition:all 0.2s}
+    .week-day.sel{border-color:var(--accent);background:#1a2010}
+    .week-day .wd-icon{font-size:24px;display:block;margin-bottom:4px}
+    .week-day .wd-name{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;margin-bottom:3px}
+    .week-day .wd-focus{font-size:12px;font-weight:700;color:var(--text)}
+    .week-day.sel .wd-name{color:var(--accent)}
+    .sto-item{background:var(--surface2);border-radius:10px;padding:10px 13px;margin-bottom:6px;font-size:12px;color:var(--dim);display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border)}
+    .sto-focus{font-weight:700;color:var(--muted);font-size:12px}
+    .equip-warn{background:#1f1a0d;border:1px solid #5a3e00;border-radius:11px;padding:10px 13px;font-size:12px;color:#d97706;margin-bottom:10px;display:flex;gap:8px;align-items:flex-start}
+    #install-banner{position:fixed;bottom:calc(var(--safe-bot)+12px);left:50%;transform:translateX(-50%);background:var(--accent);color:#0a0f1e;padding:13px 20px;border-radius:50px;font-weight:800;font-size:13px;box-shadow:0 8px 32px rgba(0,0,0,0.5);cursor:pointer;display:none;align-items:center;gap:8px;z-index:999;white-space:nowrap;animation:slideUp 0.4s ease}
+    #install-banner.visible{display:flex}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0.4)}50%{box-shadow:0 0 0 10px rgba(251,191,36,0)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(18px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    .fu{animation:fadeUp 0.3s ease both}
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <span class="ball">🏐</span>
+    <h1>Volleyball Trainer Pro</h1>
+    <p class="sub">Programma agonistico · Schiacciatore/Opposto · 3×/settimana</p>
+    <span class="role-badge">🏋️ Palestra completa</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('genera')">⚡ Genera</button>
+    <button class="tab" onclick="switchTab('piano')">📅 Piano</button>
+    <button class="tab" onclick="switchTab('esercizi')">📖 Glossario</button>
+    <button class="tab" onclick="switchTab('storico')">📋 Storico</button>
+  </div>
+
+  <!-- TAB GENERA -->
+  <div id="tab-genera">
+    <div class="card fu">
+      <div style="margin-bottom:18px">
+        <div class="energia-header">
+          <span class="label" style="margin:0">⚡ Energia oggi</span>
+          <span class="energia-badge" id="energia-badge">7/10 · Alta</span>
+        </div>
+        <input type="range" id="energia-slider" min="1" max="10" value="7"/>
+        <div class="slider-labels"><span>😴 Stanco</span><span>🚀 Esplosivo</span></div>
+      </div>
+      <div style="margin-bottom:18px">
+        <span class="label">🎯 Focus della seduta</span>
+        <div class="pills" id="focus-pills">
+          <button class="pill active" data-val="forza_bassa">💥 Forza Gambe</button>
+          <button class="pill" data-val="potenza_salto">🦵 Potenza &amp; Salto</button>
+          <button class="pill" data-val="upper_spinta">💪 Upper Spinta</button>
+          <button class="pill" data-val="upper_trazione">🙌 Upper Trazione</button>
+          <button class="pill" data-val="core_atletico">⚙️ Core Atletico</button>
+          <button class="pill" data-val="recovery">🔄 Recovery</button>
+        </div>
+      </div>
+      <div style="margin-bottom:18px">
+        <span class="label">🏋️ Attrezzatura disponibile oggi</span>
+        <div class="equip-grid" id="equip-grid">
+          <button class="equip-btn active" data-val="bilanciere"><span class="equip-icon">🏗️</span>Bilanciere &amp; Rack</button>
+          <button class="equip-btn active" data-val="macchine"><span class="equip-icon">⚙️</span>Macchine</button>
+          <button class="equip-btn active" data-val="manubri"><span class="equip-icon">🏋️</span>Manubri</button>
+          <button class="equip-btn active" data-val="cavi"><span class="equip-icon">🔗</span>Cavi &amp; Corde</button>
+        </div>
+      </div>
+      <div style="margin-bottom:18px">
+        <span class="label">📆 Fase stagionale</span>
+        <div class="pills" id="fase-pills">
+          <button class="pill active" data-val="ipertrofia">Ipertrofia</button>
+          <button class="pill" data-val="forza_max">Forza Max</button>
+          <button class="pill" data-val="potenza">Potenza</button>
+          <button class="pill" data-val="competizione">Competizione</button>
+          <button class="pill" data-val="scarico">Scarico</button>
+        </div>
+      </div>
+      <div style="margin-bottom:20px">
+        <span class="label">🗓️ Partita nei prossimi 2 giorni?</span>
+        <div class="toggle-row" id="partita-toggle">
+          <button class="toggle-btn active-no" data-val="no">✅ No, sono libero</button>
+          <button class="toggle-btn" data-val="si">⚠️ Sì, ho gara</button>
+        </div>
+      </div>
+      <button class="btn-genera" id="btn-genera">🏋️ GENERA ALLENAMENTO</button>
+    </div>
+    <div id="risultato"></div>
+  </div>
+
+  <!-- TAB PIANO -->
+  <div id="tab-piano" style="display:none">
+    <div class="card fu">
+      <span class="label">📅 Schema 3 giorni / settimana</span>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">Programma periodizzato per schiacciatore agonistico. Almeno 1 giorno di riposo tra le sedute.</p>
+      <div class="week-grid">
+        <div class="week-day sel" onclick="showPianoDay(0,this)"><span class="wd-icon">💥</span><div class="wd-name">Giorno A</div><div class="wd-focus">Forza Gambe</div></div>
+        <div class="week-day" onclick="showPianoDay(1,this)"><span class="wd-icon">💪</span><div class="wd-name">Giorno B</div><div class="wd-focus">Upper Body</div></div>
+        <div class="week-day" onclick="showPianoDay(2,this)"><span class="wd-icon">🦵</span><div class="wd-name">Giorno C</div><div class="wd-focus">Potenza &amp; Salto</div></div>
+      </div>
+      <div id="piano-detail"></div>
+    </div>
+  </div>
+
+  <!-- TAB GLOSSARIO -->
+  <div id="tab-esercizi" style="display:none">
+    <div class="card fu" style="margin-bottom:10px">
+      <span class="label">🔍 Filtra per attrezzo</span>
+      <div class="pills" id="filter-pills">
+        <button class="pill active" data-val="tutti">Tutti</button>
+        <button class="pill" data-val="bilanciere">🏗️ Bilanciere</button>
+        <button class="pill" data-val="macchine">⚙️ Macchine</button>
+        <button class="pill" data-val="manubri">🏋️ Manubri</button>
+        <button class="pill" data-val="cavi">🔗 Cavi</button>
+        <button class="pill" data-val="corpo">🤸 Corpo lib.</button>
+      </div>
+    </div>
+    <div id="esercizi-list"></div>
+  </div>
+
+  <!-- TAB STORICO -->
+  <div id="tab-storico" style="display:none">
+    <div class="card fu">
+      <span class="label">📋 Ultime sessioni</span>
+      <div id="storico-list"><p style="color:var(--dim);font-size:13px">Nessuna sessione ancora.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="install-banner">📲 Aggiungi alla schermata Home <span id="install-close" style="margin-left:8px;opacity:0.6">✕</span></div>
+
+<script>
+// ═══════════════════════ DATABASE ESERCIZI ═══════════════════════
+const EX = {
+  back_squat:      {n:"Back Squat",                  d:"Bilanciere su trapezio · Re degli esercizi per forza gambe · 4×4-5 @80-85%",     attrezzo:"bilanciere",tags:["bil"]},
+  box_squat:       {n:"Box Squat",                   d:"Squat su cassetta · Insegna profondità e riduce stress ginocchia · 4×5 @75%",    attrezzo:"bilanciere",tags:["bil"]},
+  front_squat:     {n:"Front Squat",                 d:"Bilanciere anteriore · Migliora mobilità e core sotto carico · 3×4 @70%",        attrezzo:"bilanciere",tags:["bil"]},
+  stacco_terra:    {n:"Stacco da Terra",              d:"Bilanciere da terra · Catena posteriore completa · 4×4 @80%",                   attrezzo:"bilanciere",tags:["bil"]},
+  stacco_sumo:     {n:"Stacco Sumo",                  d:"Stance larga · Glutei e adduttori più coinvolti · 3×5 @75%",                   attrezzo:"bilanciere",tags:["bil"]},
+  rdl_bil:         {n:"Romanian Deadlift (RDL)",      d:"Stacco rumeno · Hamstring e glutei · Eccentrica 3\" · 3×5 @75%",               attrezzo:"bilanciere",tags:["bil"]},
+  hip_thrust_bil:  {n:"Hip Thrust con Bilanciere",    d:"Bilanciere su anca · Massima attivazione glutei · 4×6 @75%",                   attrezzo:"bilanciere",tags:["bil","esp"]},
+  panca_piana_bil: {n:"Panca Piana con Bilanciere",   d:"Pettorali, tricipiti, anteriore spalla · 4×5 @80%",                           attrezzo:"bilanciere",tags:["bil"]},
+  panca_incl_bil:  {n:"Panca Inclinata 30°",          d:"Bilanciere · Parte alta pettorali · 3×6 @75%",                                 attrezzo:"bilanciere",tags:["bil"]},
+  military_press:  {n:"Military Press (OHP)",         d:"Bilanciere overhead · Forza pura verticale · Spalle e tricipiti · 4×5 @75%",  attrezzo:"bilanciere",tags:["bil"]},
+  push_press:      {n:"Push Press",                   d:"Bilanciere con slancio gambe · Potenza verticale specifica schiacciata · 4×5", attrezzo:"bilanciere",tags:["bil","esp"]},
+  rematore_bil:    {n:"Rematore con Bilanciere",      d:"Bent-over row · Dorsali e trapezio · Busto 45° · 4×6 @75%",                   attrezzo:"bilanciere",tags:["bil"]},
+  shrug_bil:       {n:"Shrug con Bilanciere",         d:"Trapezio superiore · Stabilizzatori spalla · 3×10 @70%",                       attrezzo:"bilanciere",tags:["bil"]},
+  trap_bar_jump:   {n:"Trap Bar Jump",                d:"Bilanciere esagonale · Combo forza+velocità ideale per saltatori · 4×4 @60%",  attrezzo:"bilanciere",tags:["bil","esp"]},
+  calf_bil:        {n:"Calf Raises con Bilanciere",   d:"Bilanciere sulle spalle · Volume elevato · Full ROM · 4×12",                   attrezzo:"bilanciere",tags:["bil"]},
+  leg_press:       {n:"Leg Press 45°",                d:"Macchina · Carico elevato sicuro · Ottima per volume · 4×8-10",               attrezzo:"macchine",tags:["mac"]},
+  leg_press_mono:  {n:"Leg Press Monopodalico",       d:"Macchina · Corregge asimmetrie · Fondamentale per saltatori · 3×8 per lato", attrezzo:"macchine",tags:["mac"]},
+  hack_squat:      {n:"Hack Squat",                   d:"Macchina · Simile al front squat · Meno stress sulla schiena · 4×8",          attrezzo:"macchine",tags:["mac"]},
+  leg_curl_mac:    {n:"Leg Curl Sdraiato",            d:"Macchina · Isolamento hamstring · Prevenzione infortuni · 3×10-12",           attrezzo:"macchine",tags:["mac","prev"]},
+  leg_ext:         {n:"Leg Extension",                d:"Macchina · Quadricipiti · Usare solo come accessorio finale · 3×12",          attrezzo:"macchine",tags:["mac"]},
+  hip_thrust_mac:  {n:"Hip Thrust su Macchina",       d:"Macchina dedicata · Alternativa guidata hip thrust · 4×8",                    attrezzo:"macchine",tags:["mac"]},
+  calf_mac:        {n:"Calf Raises su Macchina",      d:"Standing o seated · Full ROM · Eccentrica 3\" · 4×12",                        attrezzo:"macchine",tags:["mac"]},
+  lat_machine:     {n:"Lat Machine (Pulldown)",       d:"Macchina · Dorsali · Ottimo per volume · 4×8-10",                            attrezzo:"macchine",tags:["mac"]},
+  chest_press_mac: {n:"Chest Press su Macchina",      d:"Guidata · Ottima per volume pettorali · 4×10",                               attrezzo:"macchine",tags:["mac"]},
+  shoulder_mac:    {n:"Shoulder Press su Macchina",   d:"Alzate overhead guidate · Sicuro per volumi alti · 4×10",                    attrezzo:"macchine",tags:["mac"]},
+  pec_deck_inv:    {n:"Pec Deck Inverso",             d:"Macchina · Deltoide posteriore · Previene infortuni spalla · 3×15",           attrezzo:"macchine",tags:["mac","prev"]},
+  ghr:             {n:"Glute-Ham Raise (GHR)",        d:"Macchina GHR · Hamstring + glutei · Eccellente per saltatori · 3×6-8",       attrezzo:"macchine",tags:["mac","prev"]},
+  ghd_situp:       {n:"GHD Sit-up",                   d:"Macchina GHD · Core completo e flessori anca · 3×10",                        attrezzo:"macchine",tags:["mac"]},
+  seated_row_mac:  {n:"Rematore su Macchina",         d:"Guidato · Dorsali e bicipiti · Ottimo per principianti · 4×10",              attrezzo:"macchine",tags:["mac"]},
+  bulgaro:         {n:"Affondi Bulgari",              d:"Manubri · Rear foot elevated · Forza e stabilità monopodalica · 3×6 per lato",attrezzo:"manubri",tags:["man"]},
+  rdl_mono:        {n:"Single-Leg RDL con Manubri",   d:"RDL monopodalico · Bilancio e asimmetrie · 3×8 per lato",                    attrezzo:"manubri",tags:["man"]},
+  panca_man:       {n:"Panca con Manubri",            d:"ROM più ampio del bilanciere · Eccellente per spalla · 3×8-10",              attrezzo:"manubri",tags:["man"]},
+  rematore_man:    {n:"Rematore con Manubrio",        d:"Un braccio alla volta · Corregge asimmetrie dorsali · 3×8 per lato",          attrezzo:"manubri",tags:["man"]},
+  alzate_man:      {n:"Alzate Laterali (piano scapolare)",d:"30° avanti · Piano più sicuro per la spalla · 3×12",                     attrezzo:"manubri",tags:["man","prev"]},
+  reverse_fly_man: {n:"Reverse Fly con Manubri",      d:"Busto inclinato · Deltoide posteriore e romboidi · 3×15",                    attrezzo:"manubri",tags:["man","prev"]},
+  curl_man:        {n:"Curl Bicipiti con Manubri",    d:"Alternato o simultaneo · Flessori codo · 3×10",                              attrezzo:"manubri",tags:["man"]},
+  face_pull:       {n:"Face Pull con Corda",          d:"Cavo alto · Cuffia rotatori + postura · FONDAMENTALE per spalla · 4×15",     attrezzo:"cavi",tags:["cav","prev"]},
+  alzate_cavo:     {n:"Alzate Laterali ai Cavi",      d:"Cavo basso · Tensione costante su deltoide laterale · 3×12",                 attrezzo:"cavi",tags:["cav"]},
+  pallof_press:    {n:"Pallof Press",                  d:"Cavo · Anti-rotazione · Core funzionale per schiacciata · 3×10 per lato",  attrezzo:"cavi",tags:["cav"]},
+  rematore_cavo:   {n:"Rematore ai Cavi (Seated Row)", d:"Cavo basso · Eccellente controllo del movimento · 4×10",                   attrezzo:"cavi",tags:["cav"]},
+  cable_woodchop:  {n:"Cable Woodchop",               d:"Cavo diagonale alto-basso · Rotazione esplosiva · Specifica schiacciata · 3×10",attrezzo:"cavi",tags:["cav","esp"]},
+  pushdown_cavo:   {n:"Tricipiti Pushdown",            d:"Cavo alto · Isolamento tricipiti · 3×12",                                   attrezzo:"cavi",tags:["cav"]},
+  box_jump:        {n:"Box Jump",                     d:"Cassetta 50-70cm · Stacco esplosivo · Atterraggio morbido · 4×4",            attrezzo:"corpo",tags:["cor","esp"]},
+  depth_jump:      {n:"Depth Jump",                   d:"Cadi da 40cm e rimbalza · Reattività massima CNS · 4×5",                    attrezzo:"corpo",tags:["cor","esp"]},
+  broad_jump:      {n:"Broad Jump",                   d:"Salto in lungo da fermo · Potenza orizzontale · 4×4",                       attrezzo:"corpo",tags:["cor","esp"]},
+  vertical_jump:   {n:"Vertical Jump con rincorsa",   d:"Simula stacco d'attacco · Tecnica pallavolo · 4×3",                         attrezzo:"corpo",tags:["cor","esp"]},
+  salto_mono:      {n:"Salti Monopodalici in avanzamento",d:"3×5 per lato · Reattività e controllo atterraggio",                     attrezzo:"corpo",tags:["cor","esp","prev"]},
+  nordic_curl:     {n:"Nordic Curl Eccentrico",       d:"Panca bloccata · 5\" di frenata · Previene lesioni hamstring · 3×5",        attrezzo:"corpo",tags:["cor","prev"]},
+  trazioni_peso:   {n:"Trazioni con peso aggiunto",   d:"Cintura con disco · Dorsali + bicipiti sotto carico · 4×5-6",               attrezzo:"corpo",tags:["cor"]},
+  dips_peso:       {n:"Dips con peso aggiunto",       d:"Cintura con disco · Petto e tricipiti · 3×6",                               attrezzo:"corpo",tags:["cor"]},
+  ab_wheel:        {n:"Ab Wheel Rollout",             d:"Anti-estensione · Massima attivazione core profondo · 3×8",                  attrezzo:"corpo",tags:["cor"]},
+  dead_bug:        {n:"Dead Bug",                     d:"Schiena a terra · Anti-estensione lombare · 3×6 per lato",                   attrezzo:"corpo",tags:["cor"]},
+  hollow_hold:     {n:"Hollow Hold",                  d:"Tensione totale · Ginnastica funzionale · 3×25\"",                           attrezzo:"corpo",tags:["cor"]},
+  russian_twist:   {n:"Russian Twist con Palla Medica",d:"Rotazione · Simula movimento di schiacciata · 3×15",                       attrezzo:"corpo",tags:["cor","esp"]},
+  plank_peso:      {n:"Plank con peso sul dorso",     d:"Disco sulla schiena · Aumenta intensità · 3×30\"",                           attrezzo:"corpo",tags:["cor"]},
+  rotatori_ela:    {n:"Rotatori Spalla con Elastico", d:"Interno + esterno · Cuffia rotatori · FONDAMENTALE · 3×15 per lato",        attrezzo:"corpo",tags:["ela","prev"]},
+  band_pull_apart: {n:"Band Pull-Apart",              d:"Elastico davanti al petto · Scapole e cuffia rotatori · 3×15",              attrezzo:"corpo",tags:["ela","prev"]},
+  band_walk:       {n:"Band Walk Laterale",           d:"Elastico ai piedi · Abduttori e ginocchia valghe · 3×15 per lato",          attrezzo:"corpo",tags:["ela","prev"]},
+  monster_walk:    {n:"Monster Walk con Elastico",    d:"Avanzamento con elastico · Attivazione glutei e anche · 3×10m",             attrezzo:"corpo",tags:["ela","prev"]},
+  ankle_bosu:      {n:"Propriocezione su BOSU",       d:"Equilibrio monopodalico · Caviglia e stabilità · 3×30\" per lato",           attrezzo:"corpo",tags:["cor","prev"]},
+  hip_mob:         {n:"Mobilità Anche 90/90",         d:"Seduto · Rotazione interna/esterna · Fondamentale per saltatori · 3×60\"",  attrezzo:"corpo",tags:["cor","mob"]},
+  worlds_greatest: {n:"World's Greatest Stretch",     d:"Stretching dinamico completo · Mobilità totale · 3×5 per lato",             attrezzo:"corpo",tags:["cor","mob"]},
+  sleeper_stretch: {n:"Sleeper Stretch",              d:"Decubito laterale · Capsula posteriore spalla · 3×30\" per lato",            attrezzo:"corpo",tags:["cor","mob","prev"]},
+};
+
+// ═══════════════════════ PROGRAMMI ═══════════════════════
+const PROGRAMMI = {
+  forza_bassa:{
+    label:"💥 Forza Arti Inferiori",
+    riscaldamento:[
+      {n:"Mobilità anche con elastico",d:"2×10 per lato · Apertura e rotazione",attrezzo:"corpo",tags:["ela","mob"]},
+      {n:"Goblet squat con manubrio",d:"2×10 · Attivazione pattern squat",attrezzo:"manubri",tags:["man"]},
+      {n:"Hip hinge con bastone",d:"2×10 · Attivazione pattern stacco",attrezzo:"corpo",tags:["cor"]},
+    ],
+    combos:[
+      {label:"Complesso Potenza Gambe",note:"Riposa 3' tra ogni coppia — contrasto forza/velocità",steps:[
+        {t:"Back Squat",d:"4×4-5 rep · @80-85% 1RM · Eccentrica controllata 3\""},
+        {t:"Box Jump",d:"4×4 rep · Esplodi subito · Atterraggio morbido · Rec 2'"},
+      ]},
+      {label:"Complesso Catena Posteriore",note:"Fondamentale per la potenza d'attacco",steps:[
+        {t:"Romanian Deadlift",d:"3×5 rep · @75% · Eccentrica 3\" · Schiena neutra"},
+        {t:"Broad Jump",d:"3×4 rep · Massima distanza · Subito dopo ogni set"},
+      ]},
+    ],
+    accessori:{
+      bilanciere:[EX.back_squat,EX.box_squat,EX.stacco_terra,EX.stacco_sumo,EX.rdl_bil,EX.front_squat,EX.hip_thrust_bil,EX.trap_bar_jump,EX.calf_bil],
+      macchine:[EX.leg_press,EX.leg_press_mono,EX.hack_squat,EX.leg_curl_mac,EX.leg_ext,EX.hip_thrust_mac,EX.calf_mac,EX.ghr],
+      manubri:[EX.bulgaro,EX.rdl_mono],
+      cavi:[],
+    },
+    prevenzione:[EX.nordic_curl,EX.band_walk,EX.monster_walk,EX.ankle_bosu,EX.leg_curl_mac],
+    note_fase:{ipertrofia:"4×8-10 rep · Rec 90\" · RPE 7-8",forza_max:"5×3-5 rep · Rec 3-4' · RPE 8-9 · Usa i complessi",potenza:"4×3-4 rep @85% · Complessi contrasto obbligatori",competizione:"3×6-8 @70% · Conserva energie per la gara",scarico:"2-3×8 @60% · Solo qualità tecnica"}
+  },
+  potenza_salto:{
+    label:"🦵 Potenza & Salto",
+    riscaldamento:[
+      {n:"Skip A e B progressivo",d:"3×20m · Attivazione pattern motorio",attrezzo:"corpo",tags:["cor","esp"]},
+      {n:"Ankle hops",d:"3×15 · Solo caviglie · Terra il meno possibile",attrezzo:"corpo",tags:["cor","esp"]},
+      {n:"Squat jump progressivo",d:"3×5 · 50%→75%→90% intensità",attrezzo:"corpo",tags:["cor","esp"]},
+    ],
+    combos:[
+      {label:"Complesso Reattività CNS",note:"Contatto col suolo minimo — velocità su tutto",steps:[
+        {t:"Depth Jump da 40cm",d:"4×5 rep · Rimbalzo immediato · Non pensare · Rec 2'"},
+        {t:"Vertical Jump con rincorsa",d:"4×3 rep · Massima altezza · Subito dopo"},
+      ]},
+      {label:"Complesso Trap Bar Potenza",note:"Ideale se hai il bilanciere esagonale",steps:[
+        {t:"Trap Bar Deadlift esplosivo",d:"4×4 rep @70% · Fase concentrica velocissima"},
+        {t:"Broad Jump",d:"4×4 rep · Subito dopo · Massima distanza"},
+      ]},
+    ],
+    accessori:{
+      bilanciere:[EX.trap_bar_jump,EX.rdl_bil,EX.hip_thrust_bil,EX.back_squat],
+      macchine:[EX.leg_press_mono,EX.ghr,EX.leg_curl_mac],
+      manubri:[EX.rdl_mono,EX.bulgaro],
+      cavi:[],
+    },
+    prevenzione:[EX.salto_mono,EX.nordic_curl,EX.band_walk,EX.ankle_bosu],
+    note_fase:{ipertrofia:"Volume alto, carichi medi — costruisci la base esplosiva",forza_max:"Vai su forza_bassa come focus principale",potenza:"FOCUS principale — complessi obbligatori · Qualità massima",competizione:"Solo balistici leggeri · Niente carichi pesanti",scarico:"Solo mobilità e attivazione leggera"}
+  },
+  upper_spinta:{
+    label:"💪 Upper Body — Spinta",
+    riscaldamento:[
+      {n:"Band pull-apart",d:"3×15 · Scapole e cuffia rotatori",attrezzo:"corpo",tags:["ela","prev"]},
+      {n:"Rotazioni spalla con elastico",d:"2×15 per lato · Interno + esterno",attrezzo:"corpo",tags:["ela","prev"]},
+      {n:"Push-up con progressione",d:"2×10 · Riscaldamento articolare",attrezzo:"corpo",tags:["cor"]},
+    ],
+    combos:[
+      {label:"Complesso Spinta Verticale — Schiacciata",note:"Sviluppa la potenza specifica del gesto di attacco",steps:[
+        {t:"Push Press",d:"4×5 rep @75% · Slancio gambe + spinta overhead"},
+        {t:"Alzate laterali ai cavi",d:"3×12 rep · Subito dopo · Deltoide laterale"},
+      ]},
+    ],
+    accessori:{
+      bilanciere:[EX.panca_piana_bil,EX.panca_incl_bil,EX.military_press,EX.push_press],
+      macchine:[EX.chest_press_mac,EX.shoulder_mac],
+      manubri:[EX.panca_man,EX.alzate_man,EX.curl_man],
+      cavi:[EX.alzate_cavo,EX.pushdown_cavo],
+    },
+    prevenzione:[EX.face_pull,EX.rotatori_ela,EX.band_pull_apart,EX.reverse_fly_man,EX.sleeper_stretch,EX.pec_deck_inv],
+    note_fase:{ipertrofia:"4×8-12 rep · Rec 60-90\" · Superset spinta/trazione",forza_max:"5×3-5 rep su esercizio principale · Rec 3'",potenza:"Push press e movimenti balistici · Velocità",competizione:"3×8-10 @65-70% · Mantieni volume",scarico:"2×12-15 @50% · Solo qualità"}
+  },
+  upper_trazione:{
+    label:"🙌 Upper Body — Trazione",
+    riscaldamento:[
+      {n:"Dislocazioni con bastone",d:"2×10 · Mobilità completa spalla",attrezzo:"corpo",tags:["cor","mob"]},
+      {n:"Band pull-apart",d:"3×15 · Attivazione scapole",attrezzo:"corpo",tags:["ela","prev"]},
+      {n:"Trazioni elastico assistito",d:"2×8 · Riscaldamento specifico",attrezzo:"corpo",tags:["cor"]},
+    ],
+    combos:[
+      {label:"Complesso Spinta-Trazione Bilanciato",note:"Regola d'oro: 2:1 trazione su spinta per proteggere la spalla",steps:[
+        {t:"Trazioni con peso aggiunto",d:"4×5-6 rep · Pieno ROM · Presa prona · Rec 2'30\""},
+        {t:"Rematore con Bilanciere",d:"4×6-8 rep · Busto 45° · Scapole attive"},
+      ]},
+    ],
+    accessori:{
+      bilanciere:[EX.rematore_bil,EX.shrug_bil],
+      macchine:[EX.lat_machine,EX.seated_row_mac,EX.pec_deck_inv,EX.ghr],
+      manubri:[EX.rematore_man,EX.reverse_fly_man,EX.curl_man],
+      cavi:[EX.face_pull,EX.rematore_cavo,EX.cable_woodchop],
+    },
+    prevenzione:[EX.face_pull,EX.rotatori_ela,EX.band_pull_apart,EX.sleeper_stretch,EX.reverse_fly_man],
+    note_fase:{ipertrofia:"4×8-12 rep · Superset dorsali/bicipiti",forza_max:"5×3-5 rep su trazioni e rematore",potenza:"Trazioni esplosive e rematori veloci",competizione:"3×10 @65% · Focus controllo scapolare",scarico:"2×12 @50% · Solo tecnica"}
+  },
+  core_atletico:{
+    label:"⚙️ Core Atletico",
+    riscaldamento:[
+      {n:"Cat-cow",d:"2×10 · Attivazione colonna vertebrale",attrezzo:"corpo",tags:["cor","mob"]},
+      {n:"Dead bug lento",d:"2×6 per lato · Attivazione profonda",attrezzo:"corpo",tags:["cor"]},
+      {n:"Bird dog",d:"2×8 per lato · Stabilità lombare",attrezzo:"corpo",tags:["cor"]},
+    ],
+    combos:[
+      {label:"Complesso Anti-Rotazione — Specifico Schiacciata",note:"Replica il pattern di rotazione della schiacciata",steps:[
+        {t:"Cable Woodchop diagonale alto-basso",d:"3×10 per lato · Veloce nella fase concentrica"},
+        {t:"Pallof Press isometrico",d:"3×10\" per lato · Subito dopo · Resist la rotazione"},
+      ]},
+    ],
+    accessori:{
+      bilanciere:[],
+      macchine:[EX.ghd_situp,EX.ghr],
+      manubri:[EX.russian_twist],
+      cavi:[EX.pallof_press,EX.cable_woodchop],
+    },
+    prevenzione:[EX.dead_bug,EX.hollow_hold,EX.plank_peso,EX.ab_wheel,EX.hip_mob],
+    note_fase:{ipertrofia:"3×12-15 rep · Controllo totale",forza_max:"3×8 con carico · Ab wheel e GHD",potenza:"Movimenti esplosivi · Woodchop e medicine ball",competizione:"3×10 leggero · Stabilità",scarico:"Solo mobilità e attivazione"}
+  },
+  recovery:{
+    label:"🔄 Recovery Attivo",
+    riscaldamento:[
+      {n:"Camminata su tapis roulant",d:"8 min · Ritmo basso · Sblocca articolazioni",attrezzo:"macchine",tags:["mac","mob"]},
+      {n:"Foam rolling gambe e schiena",d:"60s per zona · Liberazione fasciale",attrezzo:"corpo",tags:["cor","mob"]},
+    ],
+    combos:[],
+    accessori:{
+      bilanciere:[],
+      macchine:[{n:"Cyclette a bassa intensità",d:"15 min · 60-65% FC max · Recupero attivo",attrezzo:"macchine",tags:["mac","mob"]}],
+      manubri:[{n:"Curl bicipiti leggeri",d:"2×15 @40% · Solo flusso sanguigno",attrezzo:"manubri",tags:["man","mob"]}],
+      cavi:[{n:"Cavi incrociati leggeri",d:"2×15 · Mobilità spalla sotto carico leggero",attrezzo:"cavi",tags:["cav","mob"]}],
+    },
+    prevenzione:[EX.hip_mob,EX.worlds_greatest,EX.sleeper_stretch,EX.rotatori_ela,EX.band_pull_apart,EX.ankle_bosu],
+    note_fase:{ipertrofia:"Usa come 4° giorno opzionale",forza_max:"Recupero attivo tra blocchi pesanti",potenza:"Post-gara o giorni di stanchezza elevata",competizione:"Settimana di gara · Mantieni mobilità",scarico:"Prioritario · Volume minimo"}
+  }
+};
+
+// ═══════════════════════ PIANO ═══════════════════════
+const PIANO_GIORNI=[
+  {titolo:"💥 Giorno A — Forza Arti Inferiori",durata:"70-80 min",esercizi:[
+    {n:"Riscaldamento specifico gambe",d:"Mobilità anche + hip hinge + goblet squat · 10 min"},
+    {n:"Back Squat",d:"4×4-5 @80-85% · Rec 3' · Esercizio principale"},
+    {n:"→ Box Jump (complesso contrasto)",d:"4×4 · Subito dopo ogni set di squat"},
+    {n:"Romanian Deadlift",d:"3×5 @75% · Eccentrica 3\" · Rec 2'30\""},
+    {n:"→ Broad Jump (complesso contrasto)",d:"3×4 · Subito dopo ogni set di RDL"},
+    {n:"Hip Thrust con Bilanciere",d:"4×6 · 2-0-1-1 · Glutei massimo"},
+    {n:"Leg Press Monopodalico",d:"3×8 per lato · Simmetria"},
+    {n:"Leg Curl Sdraiato su Macchina",d:"3×10 · Prevenzione hamstring"},
+    {n:"Nordic Curl Eccentrico",d:"3×5 · 5\" giù · FONDAMENTALE"},
+    {n:"Calf Raises su Macchina",d:"3×12 · Full ROM · Eccentrica 3\""},
+    {n:"Defaticamento",d:"Hamstring, quadricipiti, polpacci · 8 min"},
+  ]},
+  {titolo:"💪 Giorno B — Upper Body",durata:"65-75 min",esercizi:[
+    {n:"Riscaldamento spalla",d:"Band pull-apart + rotatori elastico + push-up · 8 min"},
+    {n:"Push Press",d:"4×5 @75% · Potenza overhead · Specifico schiacciata"},
+    {n:"Trazioni con peso aggiunto",d:"4×5-6 · Pieno ROM · Rec 2'30\""},
+    {n:"Rematore con Bilanciere",d:"4×6-8 · Busto 45° · Scapole attive"},
+    {n:"Panca con Manubri 30°",d:"3×8-10 · ROM completo · Pettorali e spalla"},
+    {n:"Face Pull con Corda",d:"4×15 · Cavo alto · FONDAMENTALE per la spalla"},
+    {n:"Alzate Laterali piano scapolare",d:"3×12 · 30° avanti · Più sicuro del laterale puro"},
+    {n:"Pallof Press ai Cavi",d:"3×10 per lato · Core anti-rotazione"},
+    {n:"Rotatori spalla con elastico",d:"3×15 per lato · Interno + esterno"},
+    {n:"Sleeper Stretch + defaticamento",d:"Spalla, petto, tricipiti · 8 min"},
+  ]},
+  {titolo:"🦵 Giorno C — Potenza & Salto",durata:"60-70 min",esercizi:[
+    {n:"Riscaldamento neurologico",d:"Skip + ankle hops + squat jump progressivi · 10 min"},
+    {n:"Depth Jump da 40cm",d:"4×5 · CNS activation · Rec 2' · PRIORITÀ QUALITÀ"},
+    {n:"→ Vertical Jump con rincorsa",d:"4×3 · Subito dopo · Massima altezza"},
+    {n:"Trap Bar Deadlift esplosivo",d:"4×4 @70% · Fase concentrica velocissima"},
+    {n:"→ Broad Jump",d:"4×4 · Subito dopo ogni set"},
+    {n:"Affondi Bulgari con Manubri",d:"3×6 per lato · Forza monopodalica"},
+    {n:"GHR o Leg Curl su Macchina",d:"3×8 · Catena posteriore"},
+    {n:"Band Walk Laterale",d:"3×15 per lato · Abduttori e ginocchio"},
+    {n:"Salti Monopodalici in avanzamento",d:"3×5 per lato · Controllo atterraggio"},
+    {n:"Propriocezione su BOSU",d:"3×30\" per lato · Caviglia e stabilità"},
+    {n:"Mobilità anche 90/90 + stretching",d:"Completo · 8 min"},
+  ]},
+];
+
+// ═══════════════════════ STATO ═══════════════════════
+let energia = 7;
+let focus = "forza_bassa";
+let fase = "ipertrofia";
+let partita = "no";
+let equipSet = new Set(["bilanciere","macchine","manubri","cavi"]);
+let checks = {};
+let totalEx = 0;
+let storico = [];
+try { storico = JSON.parse(localStorage.getItem("vbt4") || "[]"); } catch(e) { storico = []; }
+let filterEx = "tutti";
+
+// ─── Slider ───────────────────────────────────────────
+const slider = document.getElementById("energia-slider");
+const eBadge = document.getElementById("energia-badge");
+
+function updateEnergia(v) {
+  energia = parseInt(v);
+  const c = energia <= 3 ? "#ef4444" : energia <= 5 ? "#f59e0b" : energia <= 7 ? "#22c55e" : "#a855f7";
+  const l = energia <= 3 ? "Bassa 😴" : energia <= 5 ? "Media 💛" : energia <= 7 ? "Alta 🟢" : "Picco 🚀";
+  eBadge.textContent = energia + "/10 · " + l;
+  eBadge.style.background = c;
+  slider.style.accentColor = c;
+}
+
+slider.addEventListener("input", function(e) { updateEnergia(e.target.value); });
+updateEnergia(7);
+
+// ─── Pills ────────────────────────────────────────────
+function setupPills(id, setter) {
+  document.getElementById(id).addEventListener("click", function(e) {
+    const b = e.target.closest(".pill");
+    if (!b) return;
+    document.querySelectorAll("#" + id + " .pill").forEach(function(p) { p.classList.remove("active"); });
+    b.classList.add("active");
+    setter(b.dataset.val);
+  });
+}
+
+setupPills("focus-pills", function(v) { focus = v; });
+setupPills("fase-pills", function(v) { fase = v; });
+
+// ─── Attrezzatura ─────────────────────────────────────
+document.getElementById("equip-grid").addEventListener("click", function(e) {
+  const b = e.target.closest(".equip-btn");
+  if (!b) return;
+  const v = b.dataset.val;
+  if (equipSet.has(v) && equipSet.size > 1) {
+    equipSet.delete(v);
+    b.classList.remove("active");
+  } else {
+    equipSet.add(v);
+    b.classList.add("active");
+  }
+});
+
+// ─── Partita ──────────────────────────────────────────
+document.getElementById("partita-toggle").addEventListener("click", function(e) {
+  const b = e.target.closest(".toggle-btn");
+  if (!b) return;
+  document.querySelectorAll("#partita-toggle .toggle-btn").forEach(function(x) {
+    x.classList.remove("active-si", "active-no");
+  });
+  partita = b.dataset.val;
+  b.classList.add(partita === "si" ? "active-si" : "active-no");
+});
+
+// ─── Tags ─────────────────────────────────────────────
+const TL = {bil:"🏗️ Bilanciere",mac:"⚙️ Macchina",man:"🏋️ Manubri",cav:"🔗 Cavo",cor:"🤸 Corpo lib.",ela:"〰️ Elastico",prev:"🛡️ Prevenzione",esp:"⚡ Esplosivo",mob:"🌀 Mobilità"};
+
+function renderTags(tags) {
+  if (!tags || !tags.length) return "";
+  return tags.map(function(t) {
+    return '<span class="ex-tag tag-' + t + '">' + (TL[t] || t) + '</span>';
+  }).join("");
+}
+
+// ─── Utility ──────────────────────────────────────────
+function sample(arr, n) {
+  return arr.slice().sort(function() { return Math.random() - 0.5; }).slice(0, Math.min(n, arr.length));
+}
+
+// ─── Render Sezione ───────────────────────────────────
+let _keyCounter = 0;
+
+function renderSez(titolo, badge, items, getIdx) {
+  var html = '<div class="card fu"><div class="sez-header"><div class="sez-title">' + titolo + '</div><span class="sez-badge">' + badge + '</span></div><ul class="ex-list">';
+  items.forEach(function(ex) {
+    var key = "k" + (_keyCounter++);
+    getIdx();
+    html += '<li class="ex-row">'
+      + '<div class="ex-info">'
+      + '<div class="ex-name" id="nm-' + key + '">' + ex.n + '</div>'
+      + '<div class="ex-detail">' + ex.d + '</div>'
+      + '<div class="ex-tags">' + renderTags(ex.tags || []) + '</div>'
+      + '</div>'
+      + '<div class="ex-check" id="ck-' + key + '" onclick="toggleCheck(\'' + key + '\')"></div>'
+      + '</li>';
+  });
+  html += '</ul></div>';
+  return html;
+}
+
+// ─── Toggle Check ─────────────────────────────────────
+function toggleCheck(key) {
+  checks[key] = !checks[key];
+  var ck = document.getElementById("ck-" + key);
+  var nm = document.getElementById("nm-" + key);
+  if (!ck || !nm) return;
+  if (checks[key]) {
+    ck.classList.add("done"); ck.textContent = "✓"; nm.classList.add("done");
+  } else {
+    ck.classList.remove("done"); ck.textContent = ""; nm.classList.remove("done");
+  }
+  var done = Object.values(checks).filter(Boolean).length;
+  var pf = document.getElementById("prog-fill");
+  var pt = document.getElementById("prog-txt");
+  if (pf) { pf.style.width = Math.round((done / totalEx) * 100) + "%"; }
+  if (pt) { pt.textContent = done + " / " + totalEx; }
+}
+
+// ─── Genera ───────────────────────────────────────────
+document.getElementById("btn-genera").addEventListener("click", function() {
+  var prog = PROGRAMMI[focus];
+  if (!prog) return;
+
+  var volAcc = 4;
+  var nota = "";
+  if (energia <= 3)      { nota = "⚠️ Energia bassa — carichi -20%, priorità tecnica. "; volAcc = 2; }
+  else if (energia <= 5) { nota = "💛 Energia media — qualità > quantità. "; volAcc = 3; }
+  else if (energia <= 7) { nota = "🟢 Buona energia — allenamento completo! "; volAcc = 4; }
+  else                   { nota = "🚀 Picco di forma — sfruttalo ai massimali! "; volAcc = 4; }
+
+  if (partita === "si") { nota += "⚠️ GARA: carichi -30%, niente cedimento. "; volAcc = Math.max(2, volAcc - 1); }
+  if (fase === "scarico") { nota += "🔄 SCARICO: volume -40%."; volAcc = Math.max(2, volAcc - 1); }
+
+  var accDisp = [];
+  equipSet.forEach(function(eq) {
+    if (prog.accessori[eq]) accDisp = accDisp.concat(prog.accessori[eq]);
+  });
+  var seen = new Set();
+  accDisp = accDisp.filter(function(e) {
+    if (seen.has(e.n)) return false;
+    seen.add(e.n);
+    return true;
+  });
+  var accSel = sample(accDisp, volAcc);
+  var prevSel = sample(prog.prevenzione, 2);
+
+  checks = {};
+  var idx = 0;
+  totalEx = 0;
+
+  var notaFase = prog.note_fase[fase] || "";
+  var html = '<div class="nota fu">' + nota + (notaFase ? '<br><span style="color:var(--accent);font-size:12px;display:block;margin-top:4px">📊 ' + notaFase + '</span>' : '') + '</div>';
+
+  // progress bar placeholder — will be updated after we count totalEx
+  html += '<div class="card fu" style="padding:12px 16px" id="prog-card">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">'
+    + '<span style="font-size:12px;font-weight:700;color:var(--muted)">Completamento seduta</span>'
+    + '<span id="prog-txt" style="font-size:11px;color:var(--dim)">0 / ?</span>'
+    + '</div>'
+    + '<div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>'
+    + '</div>';
+
+  var missing = ["bilanciere","macchine","manubri","cavi"].filter(function(e) { return !equipSet.has(e); });
+  if (missing.length) {
+    html += '<div class="equip-warn fu">⚠️ Esclusi esercizi che richiedono: ' + missing.join(", ") + '. Attivali sopra per includerli.</div>';
+  }
+
+  // count idx function
+  function countIdx() { idx++; }
+
+  html += renderSez("🔥 Riscaldamento", "8-10 min", prog.riscaldamento, countIdx);
+
+  if (prog.combos.length && partita !== "si" && fase !== "scarico") {
+    var combo = prog.combos[Math.floor(Math.random() * prog.combos.length)];
+    html += '<div class="card fu">'
+      + '<div class="sez-header"><div class="sez-title">🔴 Complesso Principale</div><span class="sez-badge">Contrasto</span></div>'
+      + '<div class="combo-box">'
+      + '<div class="combo-label">' + combo.label + '</div>'
+      + (combo.note ? '<p style="font-size:11px;color:#7c6fa0;margin-bottom:8px">💡 ' + combo.note + '</p>' : '')
+      + '<div class="combo-steps">'
+      + combo.steps.map(function(s, i) {
+          return '<div class="combo-step"><span class="combo-num">' + (i+1) + '</span>'
+            + '<div><strong>' + s.t + '</strong><br><span style="font-size:11px;color:#7c6fa0">' + s.d + '</span></div></div>'
+            + (i < combo.steps.length - 1 ? '<div style="margin-left:11px;font-size:11px;color:#3d2a5a">↓</div>' : '');
+        }).join("")
+      + '</div></div></div>';
+  }
+
+  if (accSel.length) {
+    html += renderSez("🏋️ Esercizi Principali", accSel.length + " esercizi", accSel, countIdx);
+  } else {
+    html += '<div class="card fu"><div style="color:var(--dim);font-size:13px">Nessun esercizio per l\'attrezzatura selezionata.</div></div>';
+  }
+
+  html += renderSez("🛡️ Prevenzione & Cuffia", "Sempre", prevSel, countIdx);
+
+  var stretch = [
+    {n:"Stretching hamstring",d:"30s per lato",attrezzo:"corpo",tags:["cor","mob"]},
+    {n:"Stretching quadricipiti",d:"30s per lato",attrezzo:"corpo",tags:["cor","mob"]},
+    {n:"Stretching spalle e tricipiti",d:"30s per lato",attrezzo:"corpo",tags:["cor","mob"]},
+    {n:"Respirazione diaframmatica",d:"2 min · Reset sistema nervoso",attrezzo:"corpo",tags:["cor","mob"]},
+  ];
+  html += renderSez("🧘 Defaticamento", "5 min", stretch, countIdx);
+
+  totalEx = idx;
+  document.getElementById("risultato").innerHTML = html;
+
+  var pt = document.getElementById("prog-txt");
+  if (pt) pt.textContent = "0 / " + totalEx;
+
+  var fl = (PROGRAMMI[focus] && PROGRAMMI[focus].label) ? PROGRAMMI[focus].label : focus;
+  storico = [{focus:fl, fase:fase, energia:energia, partita:partita, ts:new Date().toLocaleString("it-IT",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}].concat(storico.slice(0,19));
+  try { localStorage.setItem("vbt4", JSON.stringify(storico)); } catch(e) {}
+  renderStorico();
+
+  setTimeout(function() {
+    var el = document.getElementById("risultato");
+    if (el) el.scrollIntoView({behavior:"smooth", block:"start"});
+  }, 100);
+});
+
+// ─── Storico ──────────────────────────────────────────
+function renderStorico() {
+  var el = document.getElementById("storico-list");
+  if (!storico.length) {
+    el.innerHTML = '<p style="color:var(--dim);font-size:13px">Nessuna sessione ancora.</p>';
+    return;
+  }
+  el.innerHTML = storico.map(function(s) {
+    return '<div class="sto-item">'
+      + '<div><div class="sto-focus">' + s.focus + '</div>'
+      + '<div style="font-size:11px;margin-top:2px">⚡' + s.energia + ' · ' + s.fase + (s.partita === "si" ? " · 🏆 gara" : "") + '</div></div>'
+      + '<span style="font-size:11px">' + s.ts + '</span>'
+      + '</div>';
+  }).join("");
+}
+renderStorico();
+
+// ─── Piano ────────────────────────────────────────────
+function showPianoDay(idx, el) {
+  document.querySelectorAll(".week-day").forEach(function(d) { d.classList.remove("sel"); });
+  el.classList.add("sel");
+  var g = PIANO_GIORNI[idx];
+  document.getElementById("piano-detail").innerHTML =
+    '<div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">'
+    + '<div class="sez-header"><div class="sez-title">' + g.titolo + '</div><span class="sez-badge">' + g.durata + '</span></div>'
+    + '<ul class="ex-list">'
+    + g.esercizi.map(function(e) {
+        return '<li class="ex-row"><div class="ex-info"><div class="ex-name">' + e.n + '</div><div class="ex-detail">' + e.d + '</div></div></li>';
+      }).join("")
+    + '</ul></div>';
+}
+showPianoDay(0, document.querySelector(".week-day"));
+
+// ─── Glossario ────────────────────────────────────────
+function renderEsercizi(filter) {
+  filterEx = filter;
+  var list = document.getElementById("esercizi-list");
+  var all = Object.values(EX);
+  var filtered = filter === "tutti" ? all : all.filter(function(e) { return e.attrezzo === filter; });
+  var groups = {};
+  var lblMap = {bilanciere:"🏗️ Bilanciere", macchine:"⚙️ Macchine", manubri:"🏋️ Manubri", cavi:"🔗 Cavi & Corde", corpo:"🤸 Corpo Libero & Elastici"};
+  filtered.forEach(function(e) {
+    var lbl = lblMap[e.attrezzo] || e.attrezzo;
+    if (!groups[e.attrezzo]) groups[e.attrezzo] = {label:lbl, items:[]};
+    groups[e.attrezzo].items.push(e);
+  });
+  list.innerHTML = Object.values(groups).map(function(g) {
+    return '<div class="card fu">'
+      + '<div class="sez-header"><div class="sez-title">' + g.label + '</div><span class="sez-badge">' + g.items.length + '</span></div>'
+      + '<ul class="ex-list">'
+      + g.items.map(function(e) {
+          return '<li class="ex-row"><div class="ex-info"><div class="ex-name">' + e.n + '</div><div class="ex-detail">' + e.d + '</div><div class="ex-tags">' + renderTags(e.tags) + '</div></div></li>';
+        }).join("")
+      + '</ul></div>';
+  }).join("");
+}
+setupPills("filter-pills", function(v) { renderEsercizi(v); });
+
+// ─── Tabs ─────────────────────────────────────────────
+function switchTab(tab) {
+  ["genera","piano","esercizi","storico"].forEach(function(t) {
+    document.getElementById("tab-" + t).style.display = (t === tab) ? "block" : "none";
+  });
+  document.querySelectorAll(".tab").forEach(function(b, i) {
+    b.classList.toggle("active", ["genera","piano","esercizi","storico"][i] === tab);
+  });
+  if (tab === "esercizi") renderEsercizi(filterEx);
+}
+
+// ─── PWA Banner ───────────────────────────────────────
+var dp = null;
+var ib = document.getElementById("install-banner");
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  dp = e;
+  ib.classList.add("visible");
+});
+ib.addEventListener("click", async function(e) {
+  if (e.target.id === "install-close") { ib.classList.remove("visible"); return; }
+  if (dp) { dp.prompt(); await dp.userChoice; ib.classList.remove("visible"); dp = null; }
+});
+</script>
+</body>
+</html>
